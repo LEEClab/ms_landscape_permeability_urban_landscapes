@@ -1,5 +1,5 @@
 #' ---
-#' title: Supplementary Information: Several shades of gray: Combining land use, animal behavior, and urban zoning to assess landscape permeability in (growing) urban areas
+#' title: Supplementary Information - Several shades of gray - Combining land use, animal behavior, and urban zoning to assess landscape permeability in (growing) urban areas
 #' author: Tulaci Bhakti Duarte, João Carlos Pena, Bernardo Brandão Niebuhr et al.
 #' date: 2019   
 #' ---
@@ -7,10 +7,7 @@
 # --------------- label=load_packages, warning=FALSE, message=FALSE, echo=FALSE
 if(!require(install.load)) install.packages('install.load'); library(install.load)
 install.load::install_load('ezknitr', 'knitr', 'tidyverse', 'raster', 'rgdal')
-
-knitr::opts_chunk$set(echo = FALSE)
-knitr::opts_knit$set(root.dir= normalizePath('..'))
-knitr::opts_chunk$set(error = FALSE)
+knitr::opts_knit$set(root.dir ='..')
 
 #' # Rationale
 #' 
@@ -64,8 +61,10 @@ hist(no.passages, breaks = breaks, col = rgb(0, 0, 1, alpha = 0.5), prob = T,
      xlab = 'Road section (km)', main = '', 
      ylim = c(0, 0.5), xlim = c(7,16))
 hist(passages, breaks = breaks, col = rgb(1, 0, 0, alpha = 0.5), prob = T, add = T)
-legend('topright', legend = c('No road passages', 'With road passages', 'We want to calculate this area'), 
-       fill = c(rgb(0, 0, 1, alpha = 0.5), rgb(1, 0, 0, alpha = 0.5), rgb(0.5, 0, 0.18, alpha = 0.6)))
+legend('topright', 
+       legend = c('No road passages', 'With road passages', 'We want to calculate this area'), 
+       fill = c(rgb(0, 0, 1, alpha = 0.5), rgb(1, 0, 0, alpha = 0.5), 
+                rgb(0.5, 0, 0.18, alpha = 0.6)))
 
 #' If we would calculate the overlap between continuous probability distributions, we would calculate the area 
 #' that falls below both curves, using the formula:
@@ -119,15 +118,9 @@ sum(df$overlap_per_road_section)
 #' 
 #' Let's first load the RSFI maps.
 
-# folder where RSFI maps are
-corrdir <- '/home/bniebuhr/Documents/00_academico/01_artigos/ms_Pena_etal_corredores_OuroPreto/corridors/simulated_corridors/'
-
-# Load data
-setwd(corrdir)
-
 # Corridors without urban zoning
-files <- list.files('simulated_corridors/RSFI/', pattern = 'nozoning', include.dirs = T, 
-                    full.names = T)
+files <- list.files('simulated_corridors/RSFI/', pattern = 'nozoning', 
+                    include.dirs = T, full.names = T)
 files_tif <- files[endsWith(files, '.tif')]
 
 corridors_no_zone <- list()
@@ -166,8 +159,8 @@ sum(z.prob[], na.rm = T) # ok, sum = 1
 #' measure of overlap or consistency between the two scenarios, and we'll also plot that to visualize
 #' the locations where there was more overlap.
 
-# Force that the no zone probability map has the same extent as the zone map, by extending and croping
-# its extension.
+# Force that the no zone probability map has the same extent as the zone map, 
+# by extending and croping its extension.
 nz.prob2 <- crop(extend(nz.prob, z.prob), z.prob)
 #plot(nz.prob2)
 
@@ -178,5 +171,6 @@ overlap[] <- pmin(nz.prob2[], z.prob[])
 # Total overlap value between scenarios
 cellStats(overlap, sum)
 
-# Plot overlap layer in log scale, since the probability values per unit area are too small.
+# Plot overlap layer in log scale, since the probability values per unit area are 
+# too small.
 plot(log(overlap))
