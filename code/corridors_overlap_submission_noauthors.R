@@ -2,7 +2,7 @@
 #' title: | 
 #'     | Text 1 Supplementary Material 
 #'     | Several shades of gray: Combining land use, animal behavior, and urban zoning to assess landscape permeability in (growing) urban areas
-#' author: Tulaci Bhakti, João Carlos de Castro Pena, Bernardo Brandão Niebuhr, Juliana Sampaio, Fernando F. Goulart, Cristiano Schetini de Azevedo, Milton Cezar Ribeiro, Yasmine Antonini
+#' author: 
 #' date: Landscape and Urban Planning   
 #' ---
 

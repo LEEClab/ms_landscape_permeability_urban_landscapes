@@ -128,7 +128,7 @@ g1.2 <- ggplot(data = tab.summ) +
 g1.2
 ggsave('relative_corridor_cost_avg_err.png', plot = g1.2, path = outdir, device = 'png', width = 25, height = 15, units = 'cm', dpi = 300)
 
-g1.3 <- ggplot(tab.test, aes(x = sp, y = cost/euc.dist, color = scenario)) + 
+g1.3 <- ggplot(tab, aes(x = factor(sp, levels = levels(sp)[c(1,4,5,3,2)]), y = cost/euc.dist, color = scenario)) + 
   stat_summary(geom="errorbar", fun.data=mean_cl_normal, fun.args=list(conf.int=0.95), 
                position = position_dodge(width = .7), size = 1, width = 0) +
   # stat_summary(geom="line", fun.y=mean, linetype="dashed")+
@@ -136,9 +136,13 @@ g1.3 <- ggplot(tab.test, aes(x = sp, y = cost/euc.dist, color = scenario)) +
   # facet_wrap(~sp, scales = 'free') +
   theme_minimal() +
   theme(axis.text.x = element_text(face = 'italic')) +
-  labs(x = '', y = 'Straightness index', color = '')
+  labs(x = '', y = 'Relative corridor cost', color = '')
 g1.3
-ggsave('relative_corridor_cost_avg_ci.png', plot = g1.3, path = outdir, device = 'png', width = 20, height = 15, units = 'cm', dpi = 300)
+ggsave('relative_corridor_cost_avg_ci.png', plot = g1.3, path = outdir, device = 'png', 
+       width = 20, height = 15, units = 'cm', dpi = 300)
+ggsave('relative_corridor_cost_avg_ci.tif', plot = g1.3, path = outdir, device = 'tiff', 
+       width = 20, height = 15, units = 'cm', dpi = 300)
+
   
 tab$st <- paste(tab$source, tab$target, sep = '->') %>% as.factor
 g2 <- ggplot() +
@@ -228,7 +232,7 @@ glm(euc.dist/tot.dist ~ scenario -1, data = tab.test[tab.test$sp == unique(tab.t
 glm(euc.dist/tot.dist ~ scenario -1, data = tab.test[tab.test$sp == unique(tab.test$sp)[4],]) %>% summary
 glm(euc.dist/tot.dist ~ scenario -1, data = tab.test[tab.test$sp == unique(tab.test$sp)[6],]) %>% summary
 
-g5 <- ggplot(tab.test, aes(x = sp, y = euc.dist/tot.dist, color = scenario)) + 
+g5 <- ggplot(tab.test, aes(x = factor(sp, levels = levels(sp)[c(1,4,5,3,2)]), y = euc.dist/tot.dist, color = scenario)) + 
   stat_summary(geom="errorbar", fun.data=mean_cl_normal, fun.args=list(conf.int=0.95), 
                position = position_dodge(width = .7), size = 1, width = 0) +
   # stat_summary(geom="line", fun.y=mean, linetype="dashed")+
@@ -239,6 +243,8 @@ g5 <- ggplot(tab.test, aes(x = sp, y = euc.dist/tot.dist, color = scenario)) +
   labs(x = '', y = 'Straightness index', color = '')
 g5
 ggsave('straightness_avg_ci.png', plot = g5, path = outdir, device = 'png', width = 20, height = 15, units = 'cm', dpi = 300)
+ggsave('straightness_avg_ci.tif', plot = g5, path = outdir, device = 'tiff', 
+       width = 20, height = 15, units = 'cm', dpi = 300)
 
 
 #---- label=overlap_maps ----------------------------------------------------------------
