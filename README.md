@@ -25,7 +25,7 @@ This presents additional simulated corridors used to assess the effects of the m
 Bhakti, T.; Pena, J.C.; Niebuhr, B.B.; Sampaio, J.; Goulart, F.F.; Azevedo, C.S.; Ribeiro, M.C., and Antonini, Y. Several shades of gray: Combining land cover, animal behavior, and master plan regulations to assess landscape permeability for birds. *In review*.
 
 You can also cite this repository, which contains both the code and data used in the publication:  
-Tulaci Bhakti, João Carlos Pena, Bernardo Brandão Niebuhr, Juliana Sampaio, Fernando F. Goulart, Cristiano S. Azevedo, … Yasmine Antonini. (2020). Code and Data from Bhakti et al. on landscape permeability of urban landscape, v. 1.0 (Version 1.0) [Code and data set]. Zenodo. http://doi.org/10.5281/zenodo.4271378.  
+Tulaci Bhakti, João Carlos Pena, Bernardo Brandão Niebuhr, Juliana Sampaio, Fernando F. Goulart, Cristiano S. Azevedo, Milton C. Ribeiro, Yasmine Antonini. (2020). Code and Data from Bhakti et al. on landscape permeability of urban landscape, v. 1.0 (Version 1.0) [Code and data set]. Zenodo. 
 [![DOI](https://zenodo.org/badge/225414362.svg)](https://zenodo.org/badge/latestdoi/225414362)
 
 # On the Media
