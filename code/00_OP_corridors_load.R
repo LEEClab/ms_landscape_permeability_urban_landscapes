@@ -1,7 +1,6 @@
 #' ---
 #' title: 'Urban ecological corridors in Ouro Preto: loading corridors'
-#' author: 
-#' - Tulaci Bhakti, Bernardo Niebuhr, Joao Carlos Pena
+#' author: Tulaci Bhakti, Bernardo Niebuhr, Joao Carlos Pena
 #' date: August 2019
 #' 
 #' output:
@@ -31,7 +30,7 @@ opts_chunk$set(error = F, message = F, warning = F, cache = F, echo = T, results
 rm(list = ls())
 
 # Data folder
-corrdir <- 'simulated_corridors/results_corridors_rescaled/'
+corrdir <- 'simulated_corridors/RSFI/'
 stdir <- 'input/sts/'
 mapdir <- 'input/shapefiles'
 

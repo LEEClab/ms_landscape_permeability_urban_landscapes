@@ -1,7 +1,6 @@
 #' ---
 #' title: 'Urban ecological corridors in Ouro Preto: removing STs from corridors'
-#' author: 
-#' - Tulaci Bhakti, Bernardo Niebuhr, Joao Carlos Pena
+#' author: Tulaci Bhakti, Bernardo Niebuhr, Joao Carlos Pena
 #' date: August 2019
 #' 
 #' output:

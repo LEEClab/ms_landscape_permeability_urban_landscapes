@@ -1,7 +1,6 @@
 #' ---
 #' title: 'Urban ecological corridors in Ouro Preto: understanding simulated corridors'
-#' author: 
-#' - Tulaci Bhakti, Bernardo Niebuhr, Joao Carlos Pena
+#' author: Tulaci Bhakti, Bernardo Niebuhr, Joao Carlos Pena
 #' date: August 2019
 #' 
 #' output:
@@ -55,8 +54,8 @@ sp <- c('A. leucophthalmus', 'C. caudata', 'P. leucoptera', 'S. scansor', 'X. fu
 
 # Original LSCorridors output
 for(i in 1:length(corr.txt.sem.zona)) {
-  corr.txt.sem.zona[[i]]$zone <- 'Land Cover'
-  corr.txt.com.zona[[i]]$zone <- 'Land Cover + Urban Zoning'
+  corr.txt.sem.zona[[i]]$zone <- 'LandC'
+  corr.txt.com.zona[[i]]$zone <- 'LandC+UrbZ'
   tt <- rbind(corr.txt.sem.zona[[i]], corr.txt.com.zona[[i]])
   tt$sp <- sp[i]
   
@@ -68,13 +67,17 @@ for(i in 1:length(corr.txt.sem.zona)) {
 }
 head(tab.st)
 
-# Corridors output sith no sts
-tab.sem.zona$scenario <- 'Land Cover'
-tab.com.zona$scenario <- 'Land Cover + Urban Zoning'
+# Corridors output with no sts
+tab.sem.zona$scenario <- 'LandC'
+tab.com.zona$scenario <- 'LandC+UrbZ'
 tab <- rbind(tab.sem.zona, tab.com.zona)
 tab$scenario <- as.factor(tab$scenario)
 
+tab$sp <- forcats::lvls_reorder(tab$sp, c(1, 4, 5, 3, 2))
+
 # Original output
+
+# Plot relative corridor cost
 ggplot() +
   geom_jitter(data = tab.st, aes(x = zone, y = CORRIDOR_COST/EUCLIDEAN_DISTANCE)) + 
   facet_wrap(~sp) + 
@@ -109,15 +112,24 @@ g1 <- ggplot() +
 g1
 ggsave('relative_corridor_cost.png', plot = g1, path = outdir, device = 'png', width = 24, height = 15, units = 'cm', dpi = 300)
 
+# Summary
 tab.summ <- tab %>% 
   dplyr::filter(euc.dist > 0) %>% 
   group_by(sp, scenario) %>% 
   summarise(
     avg.cost = mean(cost/euc.dist),
     err.cost = sd(cost/euc.dist)/sqrt(n()),
-    supp = avg.cost + err.cost/2,
-    inff = avg.cost - err.cost/2
+    supp = avg.cost + 1.96*err.cost,
+    inff = avg.cost - 1.96*err.cost
   )
+
+# percentual difference
+tab.summ$avg.orig <- rep(tab.summ$avg.cost[seq(1,9,2)], each = 2)
+tab.summ$diff.scenario <- tab.summ$avg.cost/tab.summ$avg.orig
+tab.summ$diff.sp.aleuco <- tab.summ$avg.cost/tab.summ$avg.cost[1]
+
+tab.test %>% 
+  write.csv(file = "output/relative_cost_compare_zone_nonoze.csv")
 
 g1.2 <- ggplot(data = tab.summ) +
   geom_point(aes(x = scenario, y = avg.cost)) + 
@@ -128,21 +140,23 @@ g1.2 <- ggplot(data = tab.summ) +
 g1.2
 ggsave('relative_corridor_cost_avg_err.png', plot = g1.2, path = outdir, device = 'png', width = 25, height = 15, units = 'cm', dpi = 300)
 
-g1.3 <- ggplot(tab, aes(x = factor(sp, levels = levels(sp)[c(1,4,5,3,2)]), y = cost/euc.dist, color = scenario)) + 
+g1.3 <- ggplot(tab, aes(x = sp, y = cost/euc.dist, color = scenario)) + 
   stat_summary(geom="errorbar", fun.data=mean_cl_normal, fun.args=list(conf.int=0.95), 
                position = position_dodge(width = .7), size = 1, width = 0) +
   # stat_summary(geom="line", fun.y=mean, linetype="dashed")+
   stat_summary(geom="point", fun.y = mean, size = 3, position = position_dodge(width = 0.7)) +
   # facet_wrap(~sp, scales = 'free') +
-  theme_minimal() +
-  theme(axis.text.x = element_text(face = 'italic')) +
-  labs(x = '', y = 'Relative corridor cost', color = '')
+  theme_bw() +
+  scale_color_manual(values = c("black", "grey")) +
+  theme(axis.text.x = element_text(face = 'italic'), 
+        legend.position = c(.98, .98),
+        legend.justification = c("right", "top"),
+        legend.margin = margin(0, 1, 0, 2),
+        legend.background = element_rect(colour = "black")) +
+  labs(x = 'Bird pecies', y = 'Relative corridor cost', color = NULL)
 g1.3
 ggsave('relative_corridor_cost_avg_ci.png', plot = g1.3, path = outdir, device = 'png', 
-       width = 20, height = 15, units = 'cm', dpi = 300)
-ggsave('relative_corridor_cost_avg_ci.tif', plot = g1.3, path = outdir, device = 'tiff', 
-       width = 20, height = 15, units = 'cm', dpi = 300)
-
+       width = 15, height = 12, units = 'cm', dpi = 400)
   
 tab$st <- paste(tab$source, tab$target, sep = '->') %>% as.factor
 g2 <- ggplot() +
@@ -153,6 +167,7 @@ g2 <- ggplot() +
 g2
 ggsave('relative_corridor_cost_each_st.png', plot = g2, path = outdir, device = 'png', width = 30, height = 30, units = 'cm', dpi = 300)
 
+#----------
 # Tortuosity
 
 # Original output
@@ -202,14 +217,23 @@ g3 <- ggplot() +
 g3
 ggsave('straightness.png', plot = g3, path = outdir, device = 'png', width = 25, height = 15, units = 'cm', dpi = 300)
 
+# Summary
 tab.test.summ <- tab.test %>% 
   group_by(sp, scenario) %>% 
   summarise(
     avg.str = mean(euc.dist/tot.dist),
     err.str = sd(euc.dist/tot.dist)/sqrt(n()),
-    supp = avg.str + err.str/2,
-    inff = avg.str - err.str/2
+    supp = avg.str + 1.96*err.str,
+    inff = avg.str - 1.96*err.str
   )
+
+# percentual difference
+tab.test.summ$avg.orig <- rep(tab.test.summ$avg.str[seq(1,9,2)], each = 2)
+tab.test.summ$diff.scenario <- tab.test.summ$avg.str/tab.test.summ$avg.orig
+tab.test.summ$diff.sp.aleuco <- tab.test.summ$avg.str/tab.test.summ$avg.str[1]
+
+tab.test.summ %>% 
+  write.csv(file = "output/straightness_compare_zone_nonoze.csv")
 
 g4 <- ggplot(data = tab.test.summ) +
   geom_point(aes(x = scenario, y = avg.str)) + 
@@ -220,10 +244,11 @@ g4 <- ggplot(data = tab.test.summ) +
 g4
 ggsave('straightness.png', plot = g4, path = outdir, device = 'png', width = 25, height = 15, units = 'cm', dpi = 300)
 
-(a <- glm(euc.dist/tot.dist ~ scenario * sp - 1, data = tab.test)) %>% summary
+(a <- glm(euc.dist/tot.dist ~ scenario * sp, data = tab.test)) %>% summary
 cf <- coef(a)
 cf[3:6] <- cf[3:6] + cf[1]
-cf[7:10] <- cf[7:10] + cf[2]
+cf[7:10] <- cf[7:10] + cf[1] + cf[2]
+cf[2] <- cf[2] + cf[1]
 cf
 
 glm(euc.dist/tot.dist ~ scenario -1, data = tab.test[tab.test$sp == unique(tab.test$sp)[1],]) %>% summary
@@ -232,19 +257,23 @@ glm(euc.dist/tot.dist ~ scenario -1, data = tab.test[tab.test$sp == unique(tab.t
 glm(euc.dist/tot.dist ~ scenario -1, data = tab.test[tab.test$sp == unique(tab.test$sp)[4],]) %>% summary
 glm(euc.dist/tot.dist ~ scenario -1, data = tab.test[tab.test$sp == unique(tab.test$sp)[6],]) %>% summary
 
-g5 <- ggplot(tab.test, aes(x = factor(sp, levels = levels(sp)[c(1,4,5,3,2)]), y = euc.dist/tot.dist, color = scenario)) + 
+g5 <- ggplot(tab.test, aes(x = sp, y = euc.dist/tot.dist, color = scenario)) + 
   stat_summary(geom="errorbar", fun.data=mean_cl_normal, fun.args=list(conf.int=0.95), 
                position = position_dodge(width = .7), size = 1, width = 0) +
   # stat_summary(geom="line", fun.y=mean, linetype="dashed")+
   stat_summary(geom="point", fun.y = mean, size = 3, position = position_dodge(width = 0.7)) +
   # facet_wrap(~sp, scales = 'free') +
-  theme_minimal() +
-  theme(axis.text.x = element_text(face = 'italic')) +
-  labs(x = '', y = 'Straightness index', color = '')
+  theme_bw() +
+  scale_color_manual(values = c("black", "grey")) +
+  theme(axis.text.x = element_text(face = 'italic'), 
+        legend.position = c(.02, .98),
+        legend.justification = c("left", "top"),
+        legend.margin = margin(0, 1, 0, 2),
+        legend.background = element_rect(colour = "black")) +
+  labs(x = 'Bird species', y = 'Straightness index', color = NULL)
 g5
-ggsave('straightness_avg_ci.png', plot = g5, path = outdir, device = 'png', width = 20, height = 15, units = 'cm', dpi = 300)
-ggsave('straightness_avg_ci.tif', plot = g5, path = outdir, device = 'tiff', 
-       width = 20, height = 15, units = 'cm', dpi = 300)
+ggsave('Fig5_straightness_avg_ci_400dpi.png', plot = g5, path = outdir, device = "png", 
+       width = 15, height = 12, units = 'cm', dpi = 400)
 
 
 #---- label=overlap_maps ----------------------------------------------------------------
@@ -367,6 +396,8 @@ for(i in 1:length(corridors_nozone_nost)) {
 names(overlap.sps.nozone.rast) <- sp
 overlap.sps.nozone
 
+mean(overlap.sps.nozone[5,1:4])
+
 # between species, zoning scenario
 overlap.sps.zone.rast <- list()
 overlap.sps.zone <- matrix(NA, length(corridors_zone_nost), length(corridors_zone_nost),
@@ -404,6 +435,8 @@ for(i in 1:length(corridors_zone_nost)) {
 }
 names(overlap.sps.zone.rast) <- sp
 overlap.sps.zone
+
+mean(overlap.sps.zone[5,1:4])
 
 # compare
 overlap.sps.nozone
