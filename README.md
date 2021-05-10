@@ -10,7 +10,7 @@ This folder presents all the raster and vector maps used for simulating mutliple
 
 ## simulated_corridors
 
-This folder presents the resulting simulated corridors for all species modelled in both simulation scanarios, LandC and LAndC+UrbZ. The corridors were simulated with LSCorridors package ([Ribeiro et al. 2017](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12750)), which is freely available in this [Github repo](https://github.com/LEEClab/LS_CORRIDORS).
+This folder presents the resulting simulated corridors for all species modelled in both simulation scanarios, LandC and LandC+UrbZ. The corridors were simulated with LSCorridors package ([Ribeiro et al. 2017](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12750)), which is freely available in this [Github repo](https://github.com/LEEClab/LS_CORRIDORS).
 
 ## code
 
